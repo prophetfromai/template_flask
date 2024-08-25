@@ -5,9 +5,6 @@
     "python.languageServer": "Pylance",
     "python.formatting.provider": "autopep8",
     "editor.formatOnSave": true,
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
-    "python.linting.flake8Enabled": true,
     "python.testing.pytestEnabled": true,
     "docker.languageserver.formatter.integrations": true,
     "eslint.alwaysShowStatus": true
@@ -20,7 +17,9 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "eamodio.gitlens",
-    "christian-kohler.path-intellisense"
+    "christian-kohler.path-intellisense",
+    "ms-python.pylint",      // Pylint extension
+    "ms-python.flake8"       // Flake8 extension
   ],
   "postCreateCommand": "chmod +x ./setup.sh && ./setup.sh",
   "forwardPorts": [
