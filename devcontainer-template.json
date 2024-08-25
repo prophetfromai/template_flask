@@ -1,0 +1,46 @@
+{
+    "name": "Python Flask/FastAPI Development Environment",
+    "description": "A Dev Container template for developing Python Flask applications.",
+    "options": {
+      "pythonVersion": {
+        "type": "string",
+        "description": "Select Python version",
+        "default": "3.11-slim",
+        "enum": [
+          "3.11-slim",
+          "3.10-slim",
+          "3.9-slim"
+        ]
+      }
+    },
+    "template": {
+      "devcontainer.json": {
+        "settings": {
+          "python.languageServer": "Pylance",
+          "python.formatting.provider": "autopep8",
+          "editor.formatOnSave": true,
+          "python.linting.enabled": true,
+          "python.linting.pylintEnabled": true,
+          "python.linting.flake8Enabled": true,
+          "python.testing.pytestEnabled": true,
+          "docker.languageserver.formatter.integrations": true,
+          "eslint.alwaysShowStatus": true
+        },
+        "extensions": [
+          "ms-python.python",
+          "ms-python.vscode-pylance",
+          "njpwerner.autodocstring",
+          "ms-azuretools.vscode-docker",
+          "esbenp.prettier-vscode",
+          "dbaeumer.vscode-eslint",
+          "eamodio.gitlens",
+          "christian-kohler.path-intellisense"
+        ],
+        "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+        "forwardPorts": [
+          5000
+        ]
+      }
+    }
+  }
+  
