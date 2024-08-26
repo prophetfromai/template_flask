@@ -1,37 +1,44 @@
 # app/routes.py
 
-from flask_restx import Namespace, Resource, fields
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import Dict
 
-api = Namespace('todos', description='TODO operations')
+# Create a FastAPI router
+router = APIRouter(
+    prefix="/todos",  # Set a prefix for all routes in this router
+    tags=["todos"],  # Set tags for Swagger UI documentation
+    responses={404: {"description": "Not Found"}},  # Define common responses
+)
 
-# Define a model for Swagger documentation
-todo_model = api.model('Todo', {
-    'id': fields.String(required=True, description='The task identifier'),
-    'task': fields.String(required=True, description='The task details')
-})
+# Define the Pydantic model for a TODO item
 
-TODOS = {
-    'todo1': {'task': 'Build an API'},
-    'todo2': {'task': 'Write docs'},
-    'todo3': {'task': 'Test the app'},
+
+class Todo(BaseModel):
+    id: str
+    task: str
+
+
+# In-memory storage for demonstration purposes
+TODOS: Dict[str, Dict[str, str]] = {
+    "todo1": {"task": "Build an API"},
+    "todo2": {"task": "Write docs"},
+    "todo3": {"task": "Test the app"},
 }
 
 
-@api.route('/<string:id>')
-@api.doc(params={'id': 'The task ID'})
-class TodoResource(Resource):
-    @api.doc(description='Get a task by its ID')
-    @api.marshal_with(todo_model)
-    def get(self, id):
-        """Fetch a given resource"""
-        if id not in TODOS:
-            api.abort(404, "Todo {} doesn't exist".format(id))
-        return {'id': id, 'task': TODOS[id]['task']}
+@router.get("/{id}", response_model=Todo, summary="Fetch a given resource")
+async def get_todo(id: str):
+    """Fetch a given resource"""
+    if id not in TODOS:
+        raise HTTPException(status_code=404, detail=f"Todo {id} doesn't exist")
+    return {"id": id, "task": TODOS[id]["task"]}
 
-    @api.doc(description='Delete a task by its ID')
-    def delete(self, id):
-        """Delete a task given its identifier"""
-        if id not in TODOS:
-            api.abort(404, "Todo {} doesn't exist".format(id))
-        del TODOS[id]
-        return '', 204
+
+@router.delete("/{id}", status_code=204, summary="Delete a task given its identifier")
+async def delete_todo(id: str):
+    """Delete a task given its identifier"""
+    if id not in TODOS:
+        raise HTTPException(status_code=404, detail=f"Todo {id} doesn't exist")
+    del TODOS[id]
+    return {}
