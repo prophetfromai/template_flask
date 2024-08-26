@@ -1,45 +1,37 @@
 # app/routes.py
 
-import os
-from flask import jsonify, request, current_app as app
+from flask_restx import Namespace, Resource, fields
 
-@app.route("/")
-def hello_world():
-    """Example Hello World route."""
-    name = os.environ.get("NAME", "World")
-    return f"Hello {name}!"
+api = Namespace('todos', description='TODO operations')
 
-@app.route("/json")
-def hello_json():
-    """Return a JSON response."""
-    return jsonify(message="Hello, World!", status="success")
+# Define a model for Swagger documentation
+todo_model = api.model('Todo', {
+    'id': fields.String(required=True, description='The task identifier'),
+    'task': fields.String(required=True, description='The task details')
+})
 
-@app.route("/greet/<name>")
-def greet(name):
-    """Greet the user by name."""
-    return f"Hello, {name.capitalize()}!"
+TODOS = {
+    'todo1': {'task': 'Build an API'},
+    'todo2': {'task': 'Write docs'},
+    'todo3': {'task': 'Test the app'},
+}
 
-@app.route("/calculate", methods=["POST"])
-def calculate():
-    """Perform a simple addition operation with JSON input."""
-    data = request.get_json()
-    try:
-        x = data["x"]
-        y = data["y"]
-        result = x + y
-        return jsonify(result=result, status="success")
-    except (KeyError, TypeError):
-        return jsonify(message="Invalid input. Please provide 'x' and 'y' in the request body.", status="error"), 400
 
-@app.route("/repeat", methods=["GET", "POST"])
-def repeat():
-    """Repeat a phrase or word provided in the query parameter."""
-    if request.method == "GET":
-        phrase = request.args.get("phrase", "Hello")
-        count = int(request.args.get("count", 1))
-    else:
-        data = request.get_json()
-        phrase = data.get("phrase", "Hello")
-        count = int(data.get("count", 1))
-    
-    return f"{phrase} " * count
+@api.route('/<string:id>')
+@api.doc(params={'id': 'The task ID'})
+class TodoResource(Resource):
+    @api.doc(description='Get a task by its ID')
+    @api.marshal_with(todo_model)
+    def get(self, id):
+        """Fetch a given resource"""
+        if id not in TODOS:
+            api.abort(404, "Todo {} doesn't exist".format(id))
+        return {'id': id, 'task': TODOS[id]['task']}
+
+    @api.doc(description='Delete a task by its ID')
+    def delete(self, id):
+        """Delete a task given its identifier"""
+        if id not in TODOS:
+            api.abort(404, "Todo {} doesn't exist".format(id))
+        del TODOS[id]
+        return '', 204
