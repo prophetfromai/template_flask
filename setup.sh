@@ -17,7 +17,21 @@ source /workspace/google-cloud-sdk/path.bash.inc
 echo "Initializing Google Cloud SDK..."
 gcloud init --skip-diagnostics
 
-# Upgrade pip and install Python dependencies
-echo "Upgrading pip and installing Python dependencies..."
+# Create a virtual environment
+echo "Creating a Python virtual environment..."
+python3 -m venv venv
+
+# Activate the virtual environment
+echo "Activating the virtual environment..."
+source venv/bin/activate
+
+# Upgrade pip in the virtual environment
+echo "Upgrading pip in the virtual environment..."
 pip install --upgrade pip
+
+# Install Python dependencies from requirements.txt in the virtual environment
+echo "Installing Python dependencies from requirements.txt..."
 pip install -r requirements.txt
+
+# Inform the user the setup is complete
+echo "Setup complete. Virtual environment 'venv' is activated and dependencies are installed."
